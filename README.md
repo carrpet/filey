@@ -1,5 +1,5 @@
 # filey 
-'filey' is cool new file editor that does stuff with files.
+'filey' is a cool new file editor that does stuff with files.
 
 ## Setup 
 
