@@ -1,11 +1,15 @@
-use clap::{Parser, Subcommand};
+use std::result;
 
+use clap::{Parser, Subcommand};
+use cmd::{cat_files, copy_file, create_file, delete_file};
+
+use anyhow::anyhow;
+pub mod cmd;
 #[derive(Parser)]
 #[command(about)]
 struct Cli {
-   
-   #[command(subcommand)]
-    command: Option<Commands>
+    #[command(subcommand)]
+    command: Option<Commands>,
 }
 
 #[derive(Subcommand)]
@@ -13,47 +17,52 @@ enum Commands {
     Create {
         #[arg(short)]
         text: Option<String>,
-        #[arg()]
-        filename: String
+        #[arg(required(true))]
+        filename: String,
     },
     Copy {
-        #[arg()]
+        #[arg(required(true))]
         src_file: String,
-        #[arg()]
-        dst_file: String
+        #[arg(required(true))]
+        dst_file: String,
     },
     Cat {
-        #[arg()]
+        #[arg(required(true))]
         src_file1: String,
-        #[arg()]
+        #[arg(required(true))]
         src_file2: String,
-        #[arg()]
-        dst_file: String
+        #[arg(required(true))]
+        dst_file: String,
     },
 
     Del {
-        #[arg()]
-        filename: String
-    }
-
-
+        #[arg(required(true))]
+        filename: String,
+    },
 }
 fn main() {
     let cli = Cli::parse();
 
-    match &cli.command {
+    println!("parsing command!");
+
+    let res  = match &cli.command {
         Some(Commands::Create { filename, text }) => {
-            println!("{} {:?}", filename, text)
-        },
-        Some(Commands::Copy {src_file, dst_file}) => {
-            println!("source:{}, dst: {}", src_file, dst_file)
-        },
-        Some(Commands::Cat { dst_file, src_file1, src_file2 }) => {
-            println!("cat from {} and {} to: {}", src_file1, src_file2, dst_file)
-        },
-        Some(Commands::Del { filename: target }) => {
-            println!("delete: {}", target)
+            println!("{} {:?}", filename, text);
+            create_file(filename, text.as_deref())
         }
-        None => println!("No subcommand!"),
-    }
+        Some(Commands::Copy { src_file, dst_file }) => {
+            copy_file(&src_file, &dst_file)
+        }
+        Some(Commands::Cat {
+            dst_file,
+            src_file1,
+            src_file2,
+        }) => {
+            cat_files(src_file1, src_file2, dst_file)
+        }
+        Some(Commands::Del { filename }) => {
+            delete_file(filename)
+        }
+        None => Err(anyhow!("Invalid subcommand!")),
+    };
 }
