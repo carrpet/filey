@@ -1,4 +1,4 @@
-use std::result;
+use std::{path::Path, result};
 
 use clap::{Parser, Subcommand};
 use cmd::{cat_files, copy_file, create_file, delete_file};
@@ -48,7 +48,7 @@ fn main() {
     let res  = match &cli.command {
         Some(Commands::Create { filename, text }) => {
             println!("{} {:?}", filename, text);
-            create_file(filename, text.as_deref())
+            create_file(Path::new(filename), text.as_deref())
         }
         Some(Commands::Copy { src_file, dst_file }) => {
             copy_file(&src_file, &dst_file)
