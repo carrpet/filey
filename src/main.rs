@@ -43,11 +43,8 @@ enum Commands {
 fn main() {
     let cli = Cli::parse();
 
-    println!("parsing command!");
-
     let res = match &cli.command {
         Some(Commands::Create { filename, text }) => {
-            println!("{} {:?}", filename, text);
             create_file(Path::new(filename), text.as_deref())
         }
         Some(Commands::Copy { src_file, dst_file }) => {
@@ -57,8 +54,8 @@ fn main() {
             dst_file,
             src_file1,
             src_file2,
-        }) => cat_files(src_file1, src_file2, dst_file),
-        Some(Commands::Del { filename }) => delete_file(filename),
+        }) => cat_files(Path::new(src_file1), Path::new(src_file2), Path::new(dst_file)),
+        Some(Commands::Del { filename }) => delete_file(Path::new(filename)),
         None => Err(anyhow!("Invalid subcommand!")),
     };
 }
