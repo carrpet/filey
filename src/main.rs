@@ -1,4 +1,4 @@
-use std::{path::Path, result};
+use std::path::Path;
 
 use clap::{Parser, Subcommand};
 use cmd::{cat_files, copy_file, create_file, delete_file};
@@ -45,24 +45,20 @@ fn main() {
 
     println!("parsing command!");
 
-    let res  = match &cli.command {
+    let res = match &cli.command {
         Some(Commands::Create { filename, text }) => {
             println!("{} {:?}", filename, text);
             create_file(Path::new(filename), text.as_deref())
         }
         Some(Commands::Copy { src_file, dst_file }) => {
-            copy_file(&src_file, &dst_file)
+            copy_file(Path::new(src_file), Path::new(dst_file))
         }
         Some(Commands::Cat {
             dst_file,
             src_file1,
             src_file2,
-        }) => {
-            cat_files(src_file1, src_file2, dst_file)
-        }
-        Some(Commands::Del { filename }) => {
-            delete_file(filename)
-        }
+        }) => cat_files(src_file1, src_file2, dst_file),
+        Some(Commands::Del { filename }) => delete_file(filename),
         None => Err(anyhow!("Invalid subcommand!")),
     };
 }
