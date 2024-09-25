@@ -3,7 +3,7 @@ use std::path::Path;
 use clap::{Parser, Subcommand};
 use cmd::{cat_files, copy_file, create_file, delete_file};
 
-use anyhow::anyhow;
+use anyhow::{anyhow, Result};
 pub mod cmd;
 #[derive(Parser)]
 #[command(about)]
@@ -40,7 +40,7 @@ enum Commands {
         filename: String,
     },
 }
-fn main() {
+fn main() -> Result<()> {
     let cli = Cli::parse();
 
     let res = match &cli.command {
@@ -58,4 +58,15 @@ fn main() {
         Some(Commands::Del { filename }) => delete_file(Path::new(filename)),
         None => Err(anyhow!("Invalid subcommand!")),
     };
+
+    match res {
+        Ok(s) => {
+            println!("{}", s);
+            Ok(())
+        },
+        Err(e) => {
+            eprintln!("{}", e);
+            Err(anyhow!(e.to_string()))
+        }
+    }
 }

@@ -6,40 +6,55 @@ use std::{
     path::Path,
 };
 
-pub fn create_file(file_path: &Path, text: Option<&str>) -> Result<()> {
+pub fn create_file(file_path: &Path, text: Option<&str>) -> Result<String> {
     let mut file = File::create_new(file_path)?;
 
     if let Some(t) = text {
         file.write_all(t.as_bytes())?;
     }
 
-    Ok(())
+    let msg = format!("Created file successfully: {}", file_path.to_str().unwrap_or_default());
+
+    Ok(msg)
 }
 
-pub fn copy_file(source: &Path, dst: &Path) -> Result<()> {
+pub fn copy_file(source: &Path, dst: &Path) -> Result<String> {
     if dst.exists() {
         return Err(anyhow!("destination file exists"));
     }
 
     copy(source, dst)?;
-    //TODO: handle the case where src and dst is the same when we allow overwriting
-
-    Ok(())
+    
+    let msg = format!("Copied file successfully: {} {}", 
+        source.to_str().unwrap_or_default(), 
+        dst.to_str().unwrap_or_default()
+    );
+   
+    Ok(msg)
 }
 
-pub fn cat_files(file1: &Path, file2: &Path, dst: &Path) -> Result<()> {
+pub fn cat_files(file1: &Path, file2: &Path, dst: &Path) -> Result<String> {
     let buf1 = std::fs::read(file1)?;
     let buf2 = std::fs::read(file2)?;
     let mut file = File::create_new(dst)?;
     file.write_all(&buf1)?;
     file.write_all_at(&buf2, (buf1.len()).try_into().unwrap())?;
 
-    Ok(())
+    let msg = format!("Concatenated files successfully: {} {} {}", 
+        file1.to_str().unwrap_or_default(), 
+        file2.to_str().unwrap_or_default(), 
+        dst.to_str().unwrap_or_default()
+    );
+
+    Ok(msg)
 }
 
-pub fn delete_file(filename: &Path) -> Result<()> {
+pub fn delete_file(filename: &Path) -> Result<String> {
     remove_file(filename)?;
-    Ok(())
+
+    let msg = format!("Deleted file successfully: {}", filename.to_str().unwrap_or_default());
+
+    Ok(msg)
 }
 
 #[cfg(test)]
@@ -55,7 +70,7 @@ mod tests {
     use defer::defer;
 
     // test utilities
-    fn verify_result(actual_result: Result<()>, expected_result: &Result<()>, msg: String) {
+    fn verify_result(actual_result: Result<String>, expected_result: &Result<()>, msg: String) {
         // Verify that we should receive an error
         let actual_error = format!("{}", actual_result.unwrap_err());
         assert!(
