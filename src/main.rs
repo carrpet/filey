@@ -1,10 +1,10 @@
 use std::path::Path;
-
 use clap::{Parser, Subcommand};
 use cmd::{cat_files, copy_file, create_file, delete_file};
-
 use anyhow::{anyhow, Result};
+
 pub mod cmd;
+
 #[derive(Parser)]
 #[command(about)]
 struct Cli {
@@ -54,7 +54,11 @@ fn main() -> Result<()> {
             dst_file,
             src_file1,
             src_file2,
-        }) => cat_files(Path::new(src_file1), Path::new(src_file2), Path::new(dst_file)),
+        }) => cat_files(
+            Path::new(src_file1),
+            Path::new(src_file2),
+            Path::new(dst_file),
+        ),
         Some(Commands::Del { filename }) => delete_file(Path::new(filename)),
         None => Err(anyhow!("Invalid subcommand!")),
     };
@@ -63,7 +67,7 @@ fn main() -> Result<()> {
         Ok(s) => {
             println!("{}", s);
             Ok(())
-        },
+        }
         Err(e) => {
             eprintln!("{}", e);
             Err(anyhow!(e.to_string()))

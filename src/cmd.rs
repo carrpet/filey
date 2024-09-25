@@ -13,7 +13,10 @@ pub fn create_file(file_path: &Path, text: Option<&str>) -> Result<String> {
         file.write_all(t.as_bytes())?;
     }
 
-    let msg = format!("Created file successfully: {}", file_path.to_str().unwrap_or_default());
+    let msg = format!(
+        "Created file successfully: {}",
+        file_path.to_str().unwrap_or_default()
+    );
 
     Ok(msg)
 }
@@ -24,12 +27,13 @@ pub fn copy_file(source: &Path, dst: &Path) -> Result<String> {
     }
 
     copy(source, dst)?;
-    
-    let msg = format!("Copied file successfully: {} {}", 
-        source.to_str().unwrap_or_default(), 
+
+    let msg = format!(
+        "Copied file successfully: {} {}",
+        source.to_str().unwrap_or_default(),
         dst.to_str().unwrap_or_default()
     );
-   
+
     Ok(msg)
 }
 
@@ -40,9 +44,10 @@ pub fn cat_files(file1: &Path, file2: &Path, dst: &Path) -> Result<String> {
     file.write_all(&buf1)?;
     file.write_all_at(&buf2, (buf1.len()).try_into().unwrap())?;
 
-    let msg = format!("Concatenated files successfully: {} {} {}", 
-        file1.to_str().unwrap_or_default(), 
-        file2.to_str().unwrap_or_default(), 
+    let msg = format!(
+        "Concatenated files successfully: {} {} {}",
+        file1.to_str().unwrap_or_default(),
+        file2.to_str().unwrap_or_default(),
         dst.to_str().unwrap_or_default()
     );
 
@@ -52,7 +57,10 @@ pub fn cat_files(file1: &Path, file2: &Path, dst: &Path) -> Result<String> {
 pub fn delete_file(filename: &Path) -> Result<String> {
     remove_file(filename)?;
 
-    let msg = format!("Deleted file successfully: {}", filename.to_str().unwrap_or_default());
+    let msg = format!(
+        "Deleted file successfully: {}",
+        filename.to_str().unwrap_or_default()
+    );
 
     Ok(msg)
 }
@@ -151,7 +159,7 @@ mod tests {
         let mut created = File::create(test_dir.clone().join(test_file)).unwrap();
         let unexpected_dir = "unexpected_dir";
         create_dir(test_dir.clone().join(unexpected_dir)).unwrap();
-        let contents = "Aliquam ac quam ante. Curabitur a malesuada est. Integer in porta magna. Donec porta, nisl non venenatis ullamcorper, metus ligula molestie velit, in tristique diam tortor eu velit. Morbi elementum nunc vel ante tincidunt luctus. Suspendisse ornare semper nibh, ac egestas velit posuere ac. Praesent dictum metus ut cursus euismod.";
+        let contents = "Aliquam ac quam ante. Curabitur a malesuada est. Integer in porta magna. ";
         created.write_all(contents.as_bytes()).unwrap();
 
         let tests = &[
