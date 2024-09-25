@@ -13,7 +13,7 @@ After cloning the repo, execute the following from the root directory of the pro
 cargo test
 ```
 Integration tests are located in the `tests` directory and unit tests are in the source code file.  Note that
-all the the tests rely on an external filesystem.
+all the tests rely on an external filesystem.
 
 ### Building Binary
 A binary can be built simply by executing 
