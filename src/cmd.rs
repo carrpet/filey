@@ -2,7 +2,6 @@ use anyhow::{anyhow, Ok, Result};
 use std::{
     fs::{copy, remove_file, File},
     io::Write,
-    os::unix::fs::FileExt,
     path::Path,
 };
 
@@ -23,7 +22,7 @@ pub fn create_file(file_path: &Path, text: Option<&str>) -> Result<String> {
 
 pub fn copy_file(source: &Path, dst: &Path) -> Result<String> {
     if dst.exists() {
-        return Err(anyhow!("destination file exists"));
+        return Err(anyhow!("Destination file exists"));
     }
 
     copy(source, dst)?;
@@ -38,12 +37,12 @@ pub fn copy_file(source: &Path, dst: &Path) -> Result<String> {
 }
 
 pub fn cat_files(file1: &Path, file2: &Path, dst: &Path) -> Result<String> {
-    let buf1 = std::fs::read(file1)?;
-    let buf2 = std::fs::read(file2)?;
-    let mut file = File::create_new(dst)?;
+    let mut buf1 = std::fs::read(file1)?;
+    let mut buf2 = std::fs::read(file2)?;
+    let mut file = File::create_new(dst).map_err(|_| anyhow!("Destination file exists"))?;
+    buf1.append(&mut buf2);
     file.write_all(&buf1)?;
-    file.write_all_at(&buf2, (buf1.len()).try_into().unwrap())?;
-
+    
     let msg = format!(
         "Concatenated files successfully: {} {} {}",
         file1.to_str().unwrap_or_default(),
@@ -167,7 +166,7 @@ mod tests {
             TestData {
                 src: &ChildPath::new(test_dir.clone()).child(test_file),
                 dst: &ChildPath::new(test_dir.clone()).child(test_file),
-                result: Err(anyhow!("destination file exists")),
+                result: Err(anyhow!("file exists")),
             },
             TestData {
                 src: &ChildPath::new(test_dir.clone()).child("nonexistent.txt"),
@@ -187,7 +186,7 @@ mod tests {
             TestData {
                 src: &ChildPath::new(test_dir.clone()).child(test_file),
                 dst: &ChildPath::new(test_dir.clone()).child(unexpected_dir),
-                result: Err(anyhow!("destination file exists")),
+                result: Err(anyhow!("file exists")),
             },
             // Successes
             TestData {
@@ -251,7 +250,7 @@ mod tests {
                 file1: &ChildPath::new(test_dir.clone()).child(src1),
                 file2: &ChildPath::new(test_dir.clone()).child(src1),
                 dst: &ChildPath::new(test_dir.clone()).child(src2),
-                result: Err(anyhow!("File exists")),
+                result: Err(anyhow!("file exists")),
                 contents: None,
             },
             TestData {

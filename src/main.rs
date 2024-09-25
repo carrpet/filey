@@ -6,7 +6,7 @@ use anyhow::{anyhow, Result};
 pub mod cmd;
 
 #[derive(Parser)]
-#[command(about)]
+#[command(about="Perform common file operations easily.")]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -14,18 +14,21 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    #[command(about="Create a new file with optional text")]
     Create {
         #[arg(short)]
         text: Option<String>,
         #[arg(required(true))]
         filename: String,
     },
+    #[command(about="Copy an existing file to a new location")]
     Copy {
         #[arg(required(true))]
         src_file: String,
         #[arg(required(true))]
         dst_file: String,
     },
+    #[command(about="Concatenate two existing files into a new location")]
     Cat {
         #[arg(required(true))]
         src_file1: String,
@@ -34,7 +37,7 @@ enum Commands {
         #[arg(required(true))]
         dst_file: String,
     },
-
+    #[command(about="Delete an existing file")]
     Del {
         #[arg(required(true))]
         filename: String,
@@ -63,13 +66,13 @@ fn main() -> Result<()> {
     };
 
     match res {
-        Ok(s) => {
-            println!("{}", s);
+        Ok(msg) => {
+            println!("{}", msg);
             Ok(())
         }
         Err(e) => {
-            eprintln!("{}", e);
             Err(anyhow!(e.to_string()))
         }
     }
+  
 }
