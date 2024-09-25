@@ -2,6 +2,8 @@
 name = "filey"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+description = "A simple file manipulation tool"
 
 [dev-dependencies]
 assert_cmd = "2.0.16"
@@ -10,7 +12,13 @@ assert_fs = "1.1.2"
 
 [dependencies]
 anyhow = "1.0.89"
-
 clap = { version = "4.5.17", features = ["derive"] }
 defer = "0.2.1"
+
+[package.metadata.deb]
+maintainer = "Peter Carr <carrpet@gmail.com>"
+copyright = "2024, Peter Carr <carrpet@gmail.com>"
+assets = [
+    ["target/release/filey", "usr/bin/", "755"],
+]
 
