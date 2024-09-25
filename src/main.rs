@@ -9,7 +9,7 @@ pub mod cmd;
 #[command(about)]
 struct Cli {
     #[command(subcommand)]
-    command: Option<Commands>,
+    command: Commands,
 }
 
 #[derive(Subcommand)]
@@ -44,23 +44,22 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     let res = match &cli.command {
-        Some(Commands::Create { filename, text }) => {
+        Commands::Create { filename, text } => {
             create_file(Path::new(filename), text.as_deref())
         }
-        Some(Commands::Copy { src_file, dst_file }) => {
+        Commands::Copy { src_file, dst_file } => {
             copy_file(Path::new(src_file), Path::new(dst_file))
         }
-        Some(Commands::Cat {
+        Commands::Cat {
             dst_file,
             src_file1,
             src_file2,
-        }) => cat_files(
+        } => cat_files(
             Path::new(src_file1),
             Path::new(src_file2),
             Path::new(dst_file),
         ),
-        Some(Commands::Del { filename }) => delete_file(Path::new(filename)),
-        None => Err(anyhow!("Invalid subcommand!")),
+        Commands::Del { filename } => delete_file(Path::new(filename)),
     };
 
     match res {
